@@ -1,7 +1,7 @@
 import { FOOD_IMAGES, CATEGORY_COLORS } from '../data/foodData';
 
 export default function MenuCard({ item, onAddToCart, index = 0, maxDemand = 1 }) {
-  const image = FOOD_IMAGES[item.name] || '/images/placeholder.png';
+  const image = item.image_url || FOOD_IMAGES[item.name] || '/images/placeholder.png';
   const category = item.category || 'snack';
   const priceDiff = item.optimal_price - item.base_price;
   const pricePct = ((priceDiff / item.base_price) * 100).toFixed(0);

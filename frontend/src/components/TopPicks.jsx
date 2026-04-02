@@ -50,7 +50,7 @@ export default function TopPicks({ items, onAddToCart }) {
       <div className="top-picks-grid">
         {filteredTopPicks.map((item, index) => {
           const image =
-            FOOD_IMAGES[item.name] || '/images/placeholder.png';
+            item.image_url || FOOD_IMAGES[item.name] || '/images/placeholder.png';
 
           return (
             <div

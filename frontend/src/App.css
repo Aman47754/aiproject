@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800;900&display=swap');
+
 /* ============================================
    APP LAYOUT
    ============================================ */
@@ -911,6 +913,192 @@
 }
 
 /* ============================================
+   WELCOME SPLASH (Logged Out)
+   ============================================ */
+.welcome-splash {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 200px);
+  padding: 40px 20px;
+  animation: fadeIn 1s ease-out;
+  position: relative;
+  background: radial-gradient(circle at 10% 20%, rgba(249, 115, 22, 0.05) 0%, transparent 40%),
+              radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 40%);
+}
+
+.welcome-content {
+  max-width: 850px;
+  text-align: center;
+  padding: 80px 60px;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(25px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 40px;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5), 
+              0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  position: relative;
+  overflow: hidden;
+}
+
+.welcome-content::before {
+  content: '';
+  position: absolute;
+  top: -150px;
+  right: -150px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, var(--accent-orange), transparent 70%);
+  opacity: 0.15;
+  pointer-events: none;
+  filter: blur(40px);
+}
+
+.welcome-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  background: rgba(249, 115, 22, 0.08);
+  border: 1px solid rgba(249, 115, 22, 0.25);
+  border-radius: var(--radius-full);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--accent-orange);
+  margin-bottom: 32px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.welcome-badge span {
+  color: #fff;
+}
+
+.welcome-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 4.2rem;
+  font-weight: 900;
+  line-height: 1.05;
+  margin-bottom: 28px;
+  letter-spacing: -0.02em;
+  background: linear-gradient(to bottom, #ffffff 30%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.welcome-title span {
+  display: block;
+  background: linear-gradient(135deg, var(--accent-orange), var(--accent-amber));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.welcome-desc {
+  font-size: 1.2rem;
+  color: #94a3b8;
+  line-height: 1.6;
+  margin-bottom: 48px;
+  max-width: 650px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.welcome-desc strong {
+  color: #fff;
+}
+
+.welcome-actions {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-bottom: 64px;
+}
+
+.welcome-btn {
+  padding: 16px 36px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 14px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.welcome-btn.btn-primary {
+  background: linear-gradient(135deg, var(--accent-orange), var(--accent-amber));
+  color: #000;
+  box-shadow: 0 10px 30px rgba(249, 115, 22, 0.3);
+}
+
+.welcome-btn.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 40px rgba(249, 115, 22, 0.4);
+}
+
+.welcome-btn.btn-secondary {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.welcome-btn.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.welcome-features {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  padding-top: 40px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  flex-wrap: wrap;
+}
+
+.w-feature {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #64748b;
+  transition: all 0.3s ease;
+}
+
+.w-feature:hover {
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.w-feature span {
+  font-size: 1.4rem;
+  background: rgba(255, 255, 255, 0.05);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+@media (max-width: 640px) {
+  .welcome-title { font-size: 2.8rem; }
+  .welcome-actions { flex-direction: column; width: 100%; }
+  .welcome-btn { justify-content: center; }
+  .welcome-content { padding: 40px 24px; border-radius: 24px; }
+  .welcome-features { gap: 20px; }
+}
+
+/* ============================================
+   HIDE ON MOBILE
+   ============================================ */
+/* ============================================
    RESPONSIVE
    ============================================ */
 @media (max-width: 768px) {
@@ -1425,8 +1613,113 @@
 .main-navbar-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   flex-shrink: 0;
+}
+
+/* Image Upload Styling */
+.image-upload-wrapper {
+  margin-top: 5px;
+}
+
+.file-input-container {
+  position: relative;
+}
+
+.file-input {
+  position: absolute;
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.file-input-label {
+  display: block;
+  padding: 12px;
+  background: var(--bg-glass);
+  border: 1px dashed var(--border-accent);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.file-input-label:hover {
+  border-color: var(--accent-orange);
+  background: var(--bg-glass-hover);
+  color: var(--text-primary);
+}
+
+.image-preview-container {
+  position: relative;
+  width: 100%;
+  height: 150px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border-accent);
+}
+
+.image-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.btn-remove-image {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  transition: background 0.2s;
+}
+
+.btn-remove-image:hover {
+  background: var(--accent-rose);
+}
+
+.owner-table-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.owner-table-emoji {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.restaurant-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  background: rgba(249, 115, 22, 0.1);
+  border: 1px solid rgba(249, 115, 22, 0.2);
+  border-radius: 6px;
+  color: var(--accent-orange);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-top: 4px;
 }
 
 @media (max-width: 900px) {
@@ -1459,6 +1752,10 @@
   .main-nav-link {
     font-size: 12px;
     padding: 6px 12px;
+  }
+
+  .hide-on-mobile {
+    display: none;
   }
 }
 

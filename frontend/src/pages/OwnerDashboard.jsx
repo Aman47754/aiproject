@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useAuth } from '../context/AuthContext';
 import { FOOD_IMAGES, FOOD_EMOJIS, CATEGORY_COLORS } from '../data/foodData';
 import Navbar from '../components/Navbar';
 
@@ -12,14 +13,17 @@ const EMPTY_ITEM = {
   cuisine_type: 'indian',
   min_temp: 0,
   max_temp: 50,
+  image_url: '',
 };
 
 export default function OwnerDashboard() {
+  const { token } = useAuth();
   const [menuItems, setMenuItems] = useState([]);
   const [newItem, setNewItem] = useState({ ...EMPTY_ITEM });
   const [recommendations, setRecommendations] = useState(null);
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
 
   // Fetch weather on mount
@@ -55,8 +59,57 @@ export default function OwnerDashboard() {
     }
   }, []);
 
+  // Fetch menu from db on mount
+  const fetchMenu = useCallback(async () => {
+    if (!token) return;
+    try {
+      const res = await fetch(`${BACKEND_URL}/get-menu`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setMenuItems(data);
+      }
+    } catch (err) {
+      console.error('Fetch menu error:', err);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    fetchMenu();
+  }, [fetchMenu]);
+
+  // Upload image to Cloudinary via Backend
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await fetch(`${BACKEND_URL}/upload`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setNewItem(prev => ({ ...prev, image_url: data.url }));
+      } else {
+        alert(data.error || 'Upload failed');
+      }
+    } catch (err) {
+      console.error('Upload error:', err);
+      alert('Error uploading image');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   // Add / Update item
-  const handleAddItem = () => {
+  const handleAddItem = async () => {
     if (!newItem.name.trim() || !newItem.base_price) return;
 
     const item = {
@@ -66,13 +119,27 @@ export default function OwnerDashboard() {
       max_temp: parseFloat(newItem.max_temp),
     };
 
-    if (editIndex !== null) {
-      setMenuItems((prev) => prev.map((it, i) => i === editIndex ? item : it));
-      setEditIndex(null);
-    } else {
-      setMenuItems((prev) => [...prev, item]);
+    try {
+      const url = editIndex !== null ? '/update-item' : '/add-item';
+      const method = editIndex !== null ? 'PUT' : 'POST';
+      
+      const res = await fetch(`${BACKEND_URL}${url}`, {
+        method,
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(item)
+      });
+
+      if (res.ok) {
+        await fetchMenu();
+        setNewItem({ ...EMPTY_ITEM });
+        setEditIndex(null);
+      }
+    } catch (err) {
+      console.error('Error saving item:', err);
     }
-    setNewItem({ ...EMPTY_ITEM });
   };
 
   const handleEdit = (index) => {
@@ -80,11 +147,23 @@ export default function OwnerDashboard() {
     setEditIndex(index);
   };
 
-  const handleDelete = (index) => {
-    setMenuItems((prev) => prev.filter((_, i) => i !== index));
-    if (editIndex === index) {
-      setEditIndex(null);
-      setNewItem({ ...EMPTY_ITEM });
+  const handleDelete = async (index) => {
+    const itemToDelete = menuItems[index];
+    try {
+      const res = await fetch(`${BACKEND_URL}/delete-item`, {
+        method: 'DELETE',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ name: itemToDelete.name })
+      });
+
+      if (res.ok) {
+        await fetchMenu();
+      }
+    } catch (err) {
+      console.error('Error deleting item:', err);
     }
   };
 
@@ -102,7 +181,10 @@ export default function OwnerDashboard() {
 
       const res = await fetch(`${BACKEND_URL}/custom-menu`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({
           items: menuItems,
           scenario: {
@@ -220,6 +302,32 @@ export default function OwnerDashboard() {
               </div>
             </div>
 
+            <div className="owner-form-row">
+              <label className="owner-label">Dish Image</label>
+              <div className="image-upload-wrapper">
+                {newItem.image_url ? (
+                  <div className="image-preview-container">
+                    <img src={newItem.image_url} alt="Preview" className="image-preview" />
+                    <button className="btn-remove-image" onClick={() => setNewItem({ ...newItem, image_url: '' })}>✕</button>
+                  </div>
+                ) : (
+                  <div className="file-input-container">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      id="input-dish-image"
+                      className="file-input"
+                      disabled={uploading}
+                    />
+                    <label htmlFor="input-dish-image" className="file-input-label">
+                      {uploading ? '⌛ Uploading...' : '📁 Choose Food Image'}
+                    </label>
+                  </div>
+                )}
+              </div>
+            </div>
+
             <div className="owner-form-row-half">
               <div>
                 <label className="owner-label">Min Temp (°C)</label>
@@ -284,7 +392,14 @@ export default function OwnerDashboard() {
                   {menuItems.map((item, i) => (
                     <tr key={i}>
                       <td className="owner-table-name">
-                        <span>{FOOD_EMOJIS[item.name] || '🍽️'}</span> {item.name}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          {item.image_url ? (
+                            <img src={item.image_url} alt={item.name} className="owner-table-img" />
+                          ) : (
+                            <span className="owner-table-emoji">{FOOD_EMOJIS[item.name] || '🍽️'}</span>
+                          )}
+                          <span>{item.name}</span>
+                        </div>
                       </td>
                       <td>₹{item.base_price}</td>
                       <td>
@@ -357,7 +472,9 @@ export default function OwnerDashboard() {
                       <div className="owner-rec-card" key={item.name}>
                         <div className="owner-rec-rank">#{i + 1}</div>
                         <div className="owner-rec-img-wrap">
-                          {FOOD_IMAGES[item.name] ? (
+                          {item.image_url ? (
+                            <img src={item.image_url} alt={item.name} className="owner-rec-img" />
+                          ) : FOOD_IMAGES[item.name] ? (
                             <img src={FOOD_IMAGES[item.name]} alt={item.name} className="owner-rec-img" />
                           ) : (
                             <div className="owner-rec-emoji">{FOOD_EMOJIS[item.name] || '🍽️'}</div>

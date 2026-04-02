@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
+import { FOOD_IMAGES, FOOD_EMOJIS } from '../data/foodData';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:5000';
 const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
@@ -23,6 +25,7 @@ const getUniqueMenuData = (data) => {
 };
 
 export default function Analytics() {
+  const { token } = useAuth();
   const [weather, setWeather] = useState(null);
   const [menuData, setMenuData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -70,7 +73,10 @@ export default function Analytics() {
 
       const res = await fetch(`${BACKEND_URL}/menu`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({
           scenarios: [{
             temperature: weather.temp,
@@ -284,7 +290,16 @@ export default function Analytics() {
                       const pct = ((diff / item.base_price) * 100).toFixed(0);
                       return (
                         <tr key={item.name}>
-                          <td className="owner-table-name"><span>{item.name}</span></td>
+                          <td className="owner-table-name">
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                              {item.image_url ? (
+                                <img src={item.image_url} alt={item.name} className="owner-table-img" />
+                              ) : (
+                                <span className="owner-table-emoji">{FOOD_EMOJIS[item.name] || '🍽️'}</span>
+                              )}
+                              <span>{item.name}</span>
+                            </div>
+                          </td>
                           <td>₹{item.base_price}</td>
                           <td style={{ color: 'var(--accent-emerald)', fontWeight: 700 }}>₹{Math.round(item.optimal_price)}</td>
                           <td>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useAuth } from './context/AuthContext';
 import './App.css';
 import Navbar from './components/Navbar';
 import WeatherHero from './components/WeatherHero';
@@ -13,6 +14,7 @@ const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:5000';
 
 function App() {
+  const { token } = useAuth();
   const [weather, setWeather] = useState(null);
   const [menu, setMenu] = useState([]);
   const [topPicks, setTopPicks] = useState([]);
@@ -110,7 +112,10 @@ function App() {
     try {
       const res = await fetch(`${BACKEND_URL}/menu`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({
           scenarios: [{
             temperature: weather.temp,
@@ -177,17 +182,37 @@ function App() {
   return (
     <div className="app-container">
       {/* NAVBAR */}
-      <Navbar cartCount={cartCount} cartTotal={cartTotal} onCartOpen={() => setCartOpen(true)} />
+      {token && <Navbar cartCount={cartCount} cartTotal={cartTotal} onCartOpen={() => setCartOpen(true)} />}
 
       {/* WEATHER HERO */}
-      <WeatherHero weather={weather} />
+      {token && <WeatherHero weather={weather} />}
 
       {/* SCENARIO CONTROLS */}
-      <ScenarioControls scenario={scenario} onChange={setScenario} />
+      {token && <ScenarioControls scenario={scenario} onChange={setScenario} />}
 
       {/* CONTENT */}
       {loading ? (
         <LoadingState />
+      ) : !token ? (
+        <div className="welcome-splash" id="welcome-message">
+          <div className="welcome-content">
+            <div className="welcome-badge">Welcome to <span>FlavourAI Bistro</span></div>
+            <h1 className="welcome-title">Master Your Menu with <span>AI-Driven Pricing</span></h1>
+            <p className="welcome-desc">
+              Harness the power of real-time weather and demand analysis to optimize your restaurant's profitability. 
+              Join <strong>FlavourAI Bistro</strong> today to create your custom menu and see instant AI recommendations.
+            </p>
+            <div className="welcome-actions">
+              <a href="/register" className="btn-primary welcome-btn">Get Started for Free</a>
+              <a href="/login" className="btn-secondary welcome-btn">Sign In to Dashboard</a>
+            </div>
+            <div className="welcome-features">
+              <div className="w-feature"><span>🌡️</span> Weather-Aware</div>
+              <div className="w-feature"><span>📊</span> Demand Predicted</div>
+              <div className="w-feature"><span>📈</span> Revenue Boosted</div>
+            </div>
+          </div>
+        </div>
       ) : error ? (
         <div className="error-container" id="error-state">
           <div className="error-icon">⚠️</div>
