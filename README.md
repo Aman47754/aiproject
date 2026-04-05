@@ -29,7 +29,7 @@ FlavorAI Bistro is a modern restaurant management platform that leverages **Mach
 ### 1. Clone the Repository
 ```bash
 git clone <repository-url>
-cd AI-Driven-Pricing-For-Restaurants
+
 ```
 
 ### 2. Backend Setup
@@ -38,7 +38,7 @@ cd backend
 
 # Create and activate virtual environment
 python -m venv venv
-source venv/Scripts/activate  # Windows
+ venv/Scripts/activate  # Windows
 # or: source venv/bin/activate  # Mac/Linux
 
 # Install dependencies
