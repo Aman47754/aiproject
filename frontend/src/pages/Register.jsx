@@ -10,6 +10,7 @@ const Register = () => {
     restaurant_name: '',
     restaurant_description: ''
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -77,14 +78,24 @@ const Register = () => {
           </div>
           <div className="form-group">
             <label>Password</label>
-            <input 
-              type="password" 
-              name="password"
-              value={formData.password} 
-              onChange={handleChange} 
-              required 
-              placeholder="••••••••"
-            />
+            <div className="password-input-group">
+              <input 
+                type={showPassword ? 'text' : 'password'} 
+                name="password"
+                value={formData.password} 
+                onChange={handleChange} 
+                required 
+                placeholder="••••••••"
+              />
+              <button
+                type="button"
+                className="password-toggle-btn"
+                onClick={() => setShowPassword((prev) => !prev)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? 'Hide' : 'Show'}
+              </button>
+            </div>
           </div>
           <div className="form-group">
             <label>Restaurant Name</label>

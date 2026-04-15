@@ -69,6 +69,37 @@
   transition: all 0.3s ease;
 }
 
+.password-input-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.password-input-group input {
+  flex: 1;
+}
+
+.password-toggle-btn {
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  color: var(--text-light);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.password-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.password-toggle-btn:focus {
+  outline: none;
+  border-color: var(--accent-amber);
+}
+
 .login-form input:focus {
   border-color: var(--accent-amber);
   outline: none;
