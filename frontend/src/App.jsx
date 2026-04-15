@@ -203,8 +203,8 @@ function App() {
               Join <strong>FlavourAI Bistro</strong> today to create your custom menu and see instant AI recommendations.
             </p>
             <div className="welcome-actions">
-              <a href="/register" className="btn-primary welcome-btn">Get Started for Free</a>
-              <a href="/login" className="btn-secondary welcome-btn">Sign In to Dashboard</a>
+              <a href="/register" className="btn-primary welcome-btn">Register your Restaurant</a>
+              <a href="/login" className="btn-secondary welcome-btn">Sign In</a>
             </div>
             <div className="welcome-features">
               <div className="w-feature"><span>🌡️</span> Weather-Aware</div>
